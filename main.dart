@@ -36,9 +36,18 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (index == 4) {
+      // Index 4 is the "Profile" button (0, 1, 2, 3, 4)
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfileScreen()),
+      );
+    } else {
+      // For all other buttons, just change the highlighted tab
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
   }
 
   @override
@@ -233,6 +242,571 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Colors.black87,
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+// 1. THE MAIN PROFILE SCREEN
+class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: const Text(
+          "ROORQ",
+          style: TextStyle(color: Colors.red, fontWeight: FontWeight.w900),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "YOUR PROFILE",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+
+            // Avatar Row
+            Row(
+              children: [
+                Container(
+                  width: 70,
+                  height: 70,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.grey.shade300, width: 2),
+                  ),
+                ),
+                const SizedBox(width: 15),
+                const Text(
+                  "Your Name",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: 30),
+
+            // --- FUNCTIONAL BUTTONS ---
+
+            // 1. Order History (Links to the page we made earlier)
+            _buildProfileOption(
+              context,
+              Icons.history,
+              "ORDER HISTORY",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const OrderDetailsScreen(),
+                  ),
+                );
+              },
+            ),
+
+            // 2. Saved Addresses (Links to a new placeholder page)
+            _buildProfileOption(
+              context,
+              Icons.map_outlined,
+              "SAVED ADDRESSES",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SavedAddressesScreen(),
+                  ),
+                );
+              },
+            ),
+
+            // 3. Payment Methods (Links to a new placeholder page)
+            _buildProfileOption(
+              context,
+              Icons.credit_card,
+              "PAYMENT METHODS",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PaymentMethodsScreen(),
+                  ),
+                );
+              },
+            ),
+
+            // 4. Notifications (Links to a new placeholder page)
+            _buildProfileOption(
+              context,
+              Icons.notifications_outlined,
+              "NOTIFICATIONS",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NotificationsScreen(),
+                  ),
+                );
+              },
+            ),
+
+            // 5. Settings (Links to a new placeholder page)
+            _buildProfileOption(
+              context,
+              Icons.settings_outlined,
+              "SETTINGS",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SettingsScreen(),
+                  ),
+                );
+              },
+            ),
+
+            const SizedBox(height: 30),
+
+            // Log Out Button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Logout logic goes here
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFE53935),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  "LOG OUT",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Helper Widget for the Menu Rows
+  Widget _buildProfileOption(
+    BuildContext context,
+    IconData icon,
+    String title, {
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF8F8F8),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: Colors.grey[600], size: 22),
+            const SizedBox(width: 15),
+            Text(
+              title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                color: Colors.black87,
+              ),
+            ),
+            const Spacer(),
+            const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------
+// PLACEHOLDER SCREENS
+// (Add these to the bottom of your file so the code doesn't crash)
+// ---------------------------------------------------------
+
+class PaymentMethodsScreen extends StatelessWidget {
+  const PaymentMethodsScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Payment Methods")),
+      body: const Center(child: Text("Payment Page Coming Soon...")),
+    );
+  }
+}
+
+class NotificationsScreen extends StatelessWidget {
+  const NotificationsScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Notifications")),
+      body: const Center(child: Text("Notifications Page Coming Soon...")),
+    );
+  }
+}
+
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Settings")),
+      body: const Center(child: Text("Settings Page Coming Soon...")),
+    );
+  }
+}
+
+class OrderDetailsScreen extends StatelessWidget {
+  const OrderDetailsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white, // Clean white background
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: const Text(
+          "ORDER DETAILS",
+          style: TextStyle(color: Colors.white, fontSize: 16),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 1. ORDER ID HEADER
+            const Text(
+              "ORDER #ROOXAXXX",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+
+            // 2. DELIVERED STATUS
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.red.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.check_circle, color: Colors.red, size: 16),
+                  SizedBox(width: 6),
+                  Text(
+                    "DELIVERED",
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 30),
+
+            // 3. THE PRODUCT ITEM (The Varsity Hoodie)
+            Row(
+              children: [
+                // Image Box
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(8),
+                    image: const DecorationImage(
+                      image: NetworkImage(
+                        "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=200&q=80",
+                      ), // Placeholder hoodie
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 15),
+                // Text Details
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "VARSITY HOODIE",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text("Size: M", style: TextStyle(color: Colors.grey)),
+                      SizedBox(height: 4),
+                      Text(
+                        "\$14.00",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+                // Right side status
+                const Text(
+                  "Delivered",
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 30),
+            const Divider(), // A thin line separator
+            const SizedBox(height: 20),
+
+            // 4. ORDER SUMMARY SECTION
+            const Text(
+              "ORDER SUMMARY",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 15),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "VARSITY HOODIE",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text("\$14.00", style: TextStyle(fontWeight: FontWeight.bold)),
+              ],
+            ),
+            const SizedBox(height: 10),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Shipping", style: TextStyle(color: Colors.grey)),
+                Text(
+                  "Free",
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 20),
+            const Divider(),
+            const SizedBox(height: 20),
+
+            // 5. SHIPPING & PAYMENT INFO
+            const Text(
+              "SHIPPING INFORMATION",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              "John Smith\n123 Innovation Drive\nTech City, TC 90210",
+              style: TextStyle(height: 1.5, fontSize: 15),
+            ),
+
+            const SizedBox(height: 30),
+
+            const Text(
+              "PAYMENT METHOD",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Row(
+              children: [
+                Icon(Icons.credit_card, color: Colors.black54),
+                SizedBox(width: 10),
+                Text("Visa ending in 1234", style: TextStyle(fontSize: 15)),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SavedAddressesScreen extends StatelessWidget {
+  const SavedAddressesScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      // We use a clean AppBar that blends in
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 1. BIG BOLD TITLE
+            const Text(
+              "SAVED ADDRESSES",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+
+            // 2. SCROLLABLE LIST OF ADDRESSES
+            Expanded(
+              child: ListView(
+                children: [
+                  _buildAddressCard(
+                    title: "Home",
+                    address: "123 Innovation Drive, Tech City\nState, 90210",
+                    icon: Icons.edit_outlined,
+                  ),
+                  _buildAddressCard(
+                    title: "Work",
+                    address:
+                        "456 Corporate Blvd, Business Park\nCity Center, 112233",
+                    icon: Icons.edit_outlined,
+                  ),
+                  _buildAddressCard(
+                    title: "Parents' House",
+                    address:
+                        "789 Suburban Lane, Quiet Town\nCountryside, 445566",
+                    icon: Icons.close, // The 'X' icon
+                  ),
+                  _buildAddressCard(
+                    title: "Other",
+                    address:
+                        "101 Vacation Road, Beachside\nResort Area, 998877",
+                    icon: Icons.close,
+                  ),
+                ],
+              ),
+            ),
+
+            // 3. THE "ADD NEW ADDRESS" BUTTON
+            Padding(
+              padding: const EdgeInsets.only(bottom: 30.0, top: 10),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Logic to add address would go here
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFE53935), // The Red Color
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    "ADD NEW ADDRESS",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Helper Widget to build the White Address Cards
+  Widget _buildAddressCard({
+    required String title,
+    required String address,
+    required IconData icon,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 15),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        // This adds the soft grey shadow behind the card
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.15),
+            spreadRadius: 2,
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(color: Colors.grey.shade100),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Left side: Text info
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  address,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                    height: 1.5, // Adds spacing between lines of text
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Right side: The Icon (Edit or Delete)
+          Icon(icon, color: Colors.grey, size: 20),
         ],
       ),
     );
