@@ -248,7 +248,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// 1. THE MAIN PROFILE SCREEN
+//  THE MAIN PROFILE SCREEN
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
@@ -439,10 +439,7 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------
 // PLACEHOLDER SCREENS
-// (Add these to the bottom of your file so the code doesn't crash)
-// ---------------------------------------------------------
 
 class PaymentMethodsScreen extends StatelessWidget {
   const PaymentMethodsScreen({super.key});
