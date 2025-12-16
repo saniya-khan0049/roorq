@@ -441,39 +441,6 @@ class ProfileScreen extends StatelessWidget {
 
 // PLACEHOLDER SCREENS
 
-class PaymentMethodsScreen extends StatelessWidget {
-  const PaymentMethodsScreen({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Payment Methods")),
-      body: const Center(child: Text("Payment Page Coming Soon...")),
-    );
-  }
-}
-
-class NotificationsScreen extends StatelessWidget {
-  const NotificationsScreen({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Notifications")),
-      body: const Center(child: Text("Notifications Page Coming Soon...")),
-    );
-  }
-}
-
-class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Settings")),
-      body: const Center(child: Text("Settings Page Coming Soon...")),
-    );
-  }
-}
-
 class OrderDetailsScreen extends StatelessWidget {
   const OrderDetailsScreen({super.key});
 
@@ -482,12 +449,16 @@ class OrderDetailsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white, // Clean white background
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.white,
         title: const Text(
           "ORDER DETAILS",
-          style: TextStyle(color: Colors.white, fontSize: 16),
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
@@ -806,6 +777,639 @@ class SavedAddressesScreen extends StatelessWidget {
           Icon(icon, color: Colors.grey, size: 20),
         ],
       ),
+    );
+  }
+}
+
+class PaymentMethodsScreen extends StatelessWidget {
+  const PaymentMethodsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      // Clean White Header
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            //  PAGE TITLE
+            const Text(
+              "PAYMENT METHODS",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 25),
+
+            //  LIST OF PAYMENT CARDS
+            Expanded(
+              child: ListView(
+                children: [
+                  // --- VISA CARD ---
+                  _buildPaymentCard(
+                    context,
+                    logo: const Text(
+                      "VISA",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 18,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                    title: "", // Visa usually just shows the logo
+                    number: "",
+                    actionLabel: "EDIT",
+                    isRemove: false,
+                  ),
+
+                  // --- MASTERCARD 1 ---
+                  _buildPaymentCard(
+                    context,
+                    logo: const Icon(
+                      Icons.credit_card,
+                      size: 30,
+                      color: Colors.black87,
+                    ),
+                    title: "Mastercard",
+                    number: "",
+                    actionLabel: "EDIT",
+                    isRemove: false,
+                  ),
+
+                  // --- MASTERCARD 2 ---
+                  _buildPaymentCard(
+                    context,
+                    logo: const Icon(
+                      Icons.credit_card,
+                      size: 30,
+                      color: Colors.black54,
+                    ),
+                    title: "Mastercard",
+                    number: "",
+                    actionLabel: "REMOVE",
+                    isRemove: true, // This turns the text red
+                  ),
+
+                  // --- APPLE PAY ---
+                  _buildPaymentCard(
+                    context,
+                    logo: const Icon(
+                      Icons.apple,
+                      size: 35,
+                      color: Colors.black,
+                    ),
+                    title: "Apple Pay",
+                    number: "",
+                    actionLabel: "",
+                    isRemove: false,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Helper Widget to build the White Payment Cards
+  Widget _buildPaymentCard(
+    BuildContext context, {
+    required Widget logo,
+    required String title,
+    required String number,
+    required String actionLabel,
+    required bool isRemove,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        // Soft Shadow effect
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 2,
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+        border: Border.all(color: Colors.grey.shade100),
+      ),
+      child: Row(
+        children: [
+          //  The Logo (Visa text or Icon)
+          SizedBox(width: 50, child: logo),
+
+          const SizedBox(width: 15),
+
+          //  The Card Details (Title & Number)
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (title.isNotEmpty)
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                if (number.isNotEmpty) ...[
+                  if (title.isNotEmpty) const SizedBox(height: 5),
+                  Text(
+                    number,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+
+          //  The Action Button (Edit/Remove)
+          if (actionLabel.isNotEmpty)
+            TextButton(
+              onPressed: () {
+                // Add logic here later
+              },
+              child: Text(
+                actionLabel,
+                style: TextStyle(
+                  color: isRemove
+                      ? const Color(0xFFE53935)
+                      : Colors.black87, // Red if remove, Black if edit
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class NotificationsScreen extends StatefulWidget {
+  const NotificationsScreen({super.key});
+
+  @override
+  State<NotificationsScreen> createState() => _NotificationsScreenState();
+}
+
+class _NotificationsScreenState extends State<NotificationsScreen> {
+  // These variables track the state of each switch (True = ON, False = OFF)
+  bool _weeklyDrops = false;
+  bool _orderUpdates = true;
+  bool _backInStock = true;
+  bool _promotions = true;
+  bool _communityActivity = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      // The Header (Black bar with ROORQ and Back Arrow on right, matching image)
+      appBar: AppBar(
+        // backgroundColor: Colors.black,
+        // elevation: 0,
+        automaticallyImplyLeading: true, // Hides the default back arrow
+        // title: const Text(
+        //   "ROORQ",
+        //   style: TextStyle(
+        //     color: Colors.white,
+        //     fontWeight: FontWeight.w900,
+        //     fontSize: 20,
+        //     letterSpacing: 1.0,
+        //   ),
+        // ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.white,
+              size: 20,
+            ),
+            onPressed: () => Navigator.pop(context),
+          ),
+          const SizedBox(width: 10), // Padding for the arrow
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 10),
+            const Text(
+              "NOTIFICATIONS",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 30),
+
+            //  WEEKLY DROP ALERTS
+            _buildToggleCard(
+              title: "WEEKLY DROP ALERTS",
+              value: _weeklyDrops,
+              onChanged: (newValue) {
+                setState(() => _weeklyDrops = newValue);
+              },
+            ),
+
+            //  ORDER UPDATES
+            _buildToggleCard(
+              title: "ORDER UPDATES",
+              value: _orderUpdates,
+              onChanged: (newValue) {
+                setState(() => _orderUpdates = newValue);
+              },
+            ),
+
+            //  BACK IN STOCK
+            _buildToggleCard(
+              title: "BACK IN STOCK",
+              value: _backInStock,
+              onChanged: (newValue) {
+                setState(() => _backInStock = newValue);
+              },
+            ),
+
+            // PROMOTIONS
+            _buildToggleCard(
+              title: "PROMOTIONS",
+              value: _promotions,
+              onChanged: (newValue) {
+                setState(() => _promotions = newValue);
+              },
+            ),
+
+            // COMMUNITY ACTIVITY
+            _buildToggleCard(
+              title: "COMMUNITY ACTIVITY",
+              value: _communityActivity,
+              onChanged: (newValue) {
+                setState(() => _communityActivity = newValue);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Helper Widget to build the Toggle Cards
+  Widget _buildToggleCard({
+    required String title,
+    required bool value,
+    required Function(bool) onChanged,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        // The soft shadow effect
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.15),
+            spreadRadius: 2,
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        // Thin grey border
+        border: Border.all(color: Colors.grey.shade100),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          // The Switch Widget
+          Transform.scale(
+            scale: 0.8, // Slightly smaller to match design elegance
+            child: Switch(
+              value: value,
+              onChanged: onChanged,
+              activeColor: const Color(0xFFE53935), // Red when ON
+              activeTrackColor: const Color(0xFFE53935).withOpacity(0.3),
+              inactiveThumbColor: Colors.grey,
+              inactiveTrackColor: Colors.grey.shade200,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      // Header: Black bar with ROORQ on left, Back arrow on right
+      appBar: AppBar(
+        // backgroundColor: Colors.black,
+        // elevation: 0,
+        automaticallyImplyLeading: true, // Hides default back button
+        // title: const Text(
+        //   "ROORQ",
+        //   style: TextStyle(
+        //     color: Colors.white,
+        //     fontWeight: FontWeight.w900,
+        //     fontSize: 20,
+        //     letterSpacing: 1.0,
+        //   ),
+        // ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+              size: 20,
+            ),
+            onPressed: () => Navigator.pop(context),
+          ),
+          const SizedBox(width: 10),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 10),
+            const Text(
+              "SETTINGS",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 30),
+
+            //  CONTACT SUPPORT (Links to the new page)
+            _buildSettingsButton(
+              context,
+              icon: Icons.chat_bubble_outline,
+              text: "Contact Support",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ContactSupportScreen(),
+                  ),
+                );
+              },
+            ),
+
+            //  LEGAL & PRIVACY (Placeholder)
+            _buildSettingsButton(
+              context,
+              icon: Icons.shield_outlined,
+              text: "Legal & Privacy",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LegalPrivacyScreen(),
+                  ),
+                );
+              },
+            ),
+
+            //  ABOUT ROOQ (Placeholder)
+            _buildSettingsButton(
+              context,
+              icon: Icons.info_outline,
+              text: "About ROOQ",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AboutScreen()),
+                );
+              },
+            ),
+
+            //  LOG OUT (Red Text)
+            _buildSettingsButton(
+              context,
+              icon: Icons.exit_to_app, // Door icon
+              text: "Log Out",
+              isRed: true, // Special flag to make text red
+              onTap: () {
+                // For now,just go to the previous screen
+                // In a real app, this would clear user data
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Helper Widget for the big white buttons
+  Widget _buildSettingsButton(
+    BuildContext context, {
+    required IconData icon,
+    required String text,
+    required VoidCallback onTap,
+    bool isRed = false, // Defaults to false unless we say otherwise
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          // Box Shadow for 3D effect
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.15),
+              spreadRadius: 2,
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: Border.all(color: Colors.grey.shade200),
+        ),
+        child: Row(
+          children: [
+            // Icon
+            Icon(
+              icon,
+              color: const Color(0xFFE53935), // Red Icon
+              size: 28,
+            ),
+            const SizedBox(width: 20),
+            // Text
+            Text(
+              text,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: isRed
+                    ? const Color(0xFFE53935)
+                    : Colors.black, // Red if 'isRed' is true
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+//  CONTACT SUPPORT SCREEN IN SETTINGS
+
+class ContactSupportScreen extends StatelessWidget {
+  const ContactSupportScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        title: const Text(
+          "ROORQ",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.0,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+              size: 20,
+            ),
+            onPressed: () => Navigator.pop(context),
+          ),
+          const SizedBox(width: 10),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 10),
+            const Text(
+              "CONTACT SUPPORT",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 15),
+            Text(
+              "Our team is available to support you with any issues related to your orders or account.",
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 30),
+
+            //  Live Chat
+            _buildContactOption(Icons.chat_bubble_outline, "LIVE CHAT"),
+
+            //  Email Us
+            _buildContactOption(Icons.email_outlined, "EMAIL US"),
+
+            //  Call Help Desk
+            _buildContactOption(Icons.phone_outlined, "CALL HELP DESK"),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Helper for Contact Buttons (Centered red text)
+  Widget _buildContactOption(IconData icon, String text) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.symmetric(vertical: 25),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.15),
+            spreadRadius: 2,
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center, // Center everything
+        children: [
+          Icon(icon, color: const Color(0xFFE53935), size: 28),
+          const SizedBox(width: 15),
+          Text(
+            text,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFE53935), // Red Text
+              letterSpacing: 0.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// OTHER PLACEHOLDER SCREENS IN SETTINGS
+
+class LegalPrivacyScreen extends StatelessWidget {
+  const LegalPrivacyScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Legal & Privacy")),
+      body: const Center(child: Text("Privacy Policy goes here.")),
+    );
+  }
+}
+
+class AboutScreen extends StatelessWidget {
+  const AboutScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("About ROOQ")),
+      body: const Center(child: Text("App Version 1.0.0")),
     );
   }
 }
