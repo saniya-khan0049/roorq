@@ -633,14 +633,120 @@ class OrderDetailsScreen extends StatelessWidget {
   }
 }
 
-class SavedAddressesScreen extends StatelessWidget {
+class SavedAddressesScreen extends StatefulWidget {
   const SavedAddressesScreen({super.key});
+
+  @override
+  State<SavedAddressesScreen> createState() => _SavedAddressesScreenState();
+}
+
+//  This list holds address data(for Saved Addresses)
+List<Map<String, String>> addresses = [
+  {"title": "Home", "address": "123 Innovation Drive, Tech City\nState, 90210"},
+  {
+    "title": "Work",
+    "address": "456 Corporate Blvd, Business Park\nCity Center, 112233",
+  },
+  {
+    "title": "Parents' House",
+    "address": "789 Suburban Lane, Quiet Town\nCountryside, 445566",
+  },
+];
+
+class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
+  //  Function to Remove an Address
+  void _removeAddress(int index) {
+    setState(() {
+      addresses.removeAt(index);
+    });
+    // Show a small message at the bottom
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Address removed"),
+        duration: Duration(seconds: 1),
+      ),
+    );
+  }
+
+  // 3. Function to Add or Edit an Address (Shows a Pop-up Dialog)
+  void _showAddressDialog({int? index}) {
+    // If index is null, we are Adding. If index exists, we are Editing.
+    bool isEditing = index != null;
+
+    // Controllers capture what you type
+    TextEditingController titleController = TextEditingController();
+    TextEditingController addressController = TextEditingController();
+
+    // If editing, pre-fill the text boxes with existing data
+    if (isEditing) {
+      titleController.text = addresses[index!]["title"]!;
+      addressController.text = addresses[index]["address"]!;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(isEditing ? "Edit Address" : "Add New Address"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min, // Make the box fit the content
+            children: [
+              TextField(
+                controller: titleController,
+                decoration: const InputDecoration(
+                  labelText: "Label (e.g. Home, Work)",
+                ),
+              ),
+              TextField(
+                controller: addressController,
+                decoration: const InputDecoration(labelText: "Full Address"),
+                maxLines: 3, // Allow multiple lines for address
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context), // Close dialog
+              child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFE53935),
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                if (titleController.text.isNotEmpty &&
+                    addressController.text.isNotEmpty) {
+                  setState(() {
+                    if (isEditing) {
+                      // Update existing
+                      addresses[index!] = {
+                        "title": titleController.text,
+                        "address": addressController.text,
+                      };
+                    } else {
+                      // Add new
+                      addresses.add({
+                        "title": titleController.text,
+                        "address": addressController.text,
+                      });
+                    }
+                  });
+                  Navigator.pop(context); // Close dialog
+                }
+              },
+              child: Text(isEditing ? "Save" : "Add"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      // We use a clean AppBar that blends in
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -654,55 +760,32 @@ class SavedAddressesScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. BIG BOLD TITLE
             const Text(
               "SAVED ADDRESSES",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
 
-            // 2. SCROLLABLE LIST OF ADDRESSES
+            // 4. The Dynamic List
             Expanded(
-              child: ListView(
-                children: [
-                  _buildAddressCard(
-                    title: "Home",
-                    address: "123 Innovation Drive, Tech City\nState, 90210",
-                    icon: Icons.edit_outlined,
-                  ),
-                  _buildAddressCard(
-                    title: "Work",
-                    address:
-                        "456 Corporate Blvd, Business Park\nCity Center, 112233",
-                    icon: Icons.edit_outlined,
-                  ),
-                  _buildAddressCard(
-                    title: "Parents' House",
-                    address:
-                        "789 Suburban Lane, Quiet Town\nCountryside, 445566",
-                    icon: Icons.close, // The 'X' icon
-                  ),
-                  _buildAddressCard(
-                    title: "Other",
-                    address:
-                        "101 Vacation Road, Beachside\nResort Area, 998877",
-                    icon: Icons.close,
-                  ),
-                ],
+              child: ListView.builder(
+                itemCount: addresses.length,
+                itemBuilder: (context, index) {
+                  return _buildAddressCard(index);
+                },
               ),
             ),
 
-            // 3. THE "ADD NEW ADDRESS" BUTTON
+            // 5. Add New Address Button
             Padding(
               padding: const EdgeInsets.only(bottom: 30.0, top: 10),
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Logic to add address would go here
-                  },
+                  onPressed: () =>
+                      _showAddressDialog(), // Call the add function
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFE53935), // The Red Color
+                    backgroundColor: const Color(0xFFE53935),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 18),
                     shape: RoundedRectangleBorder(
@@ -722,19 +805,14 @@ class SavedAddressesScreen extends StatelessWidget {
     );
   }
 
-  // Helper Widget to build the White Address Cards
-  Widget _buildAddressCard({
-    required String title,
-    required String address,
-    required IconData icon,
-  }) {
+  // Helper Widget for the Address Card
+  Widget _buildAddressCard(int index) {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
-        // This adds the soft grey shadow behind the card
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.15),
@@ -754,7 +832,7 @@ class SavedAddressesScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  addresses[index]["title"]!,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -763,115 +841,295 @@ class SavedAddressesScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  address,
+                  addresses[index]["address"]!,
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[600],
-                    height: 1.5, // Adds spacing between lines of text
+                    height: 1.5,
                   ),
                 ),
               ],
             ),
           ),
-          // Right side: The Icon (Edit or Delete)
-          Icon(icon, color: Colors.grey, size: 20),
+
+          // Right side: Edit and Remove Icons
+          Column(
+            children: [
+              // Edit Button
+              InkWell(
+                onTap: () =>
+                    _showAddressDialog(index: index), // Open Edit Dialog
+                child: const Padding(
+                  padding: EdgeInsets.all(4.0),
+                  child: Icon(
+                    Icons.edit_outlined,
+                    color: Colors.black54,
+                    size: 20,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 15),
+              // Remove Button
+              InkWell(
+                onTap: () => _removeAddress(index), // Remove Item
+                child: const Padding(
+                  padding: EdgeInsets.all(4.0),
+                  child: Icon(Icons.close, color: Colors.red, size: 20),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 }
 
-class PaymentMethodsScreen extends StatelessWidget {
+class PaymentMethodsScreen extends StatefulWidget {
   const PaymentMethodsScreen({super.key});
+
+  @override
+  State<PaymentMethodsScreen> createState() => _PaymentMethodsScreenState();
+}
+
+//  THE DATA LIST (for Payment Methods)
+List<Map<String, dynamic>> paymentMethods = [
+  {"type": "visa", "title": "VISA", "number": "... 1234"},
+  {"type": "mastercard", "title": "Mastercard", "number": "... 5678"},
+  {"type": "apple_pay", "title": "Apple Pay", "number": ""},
+];
+
+class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
+  //  REMOVE FUNCTION
+  void _removeMethod(int index) {
+    setState(() {
+      paymentMethods.removeAt(index);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Card removed"),
+        duration: Duration(milliseconds: 500),
+      ),
+    );
+  }
+
+  //  EDIT FUNCTION
+  void _editMethod(int index) {
+    TextEditingController textController = TextEditingController(
+      text: paymentMethods[index]['number'],
+    );
+
+    if (paymentMethods[index]['type'] == 'apple_pay') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Apple Pay settings are managed by iOS")),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Edit ${paymentMethods[index]['title']}"),
+        content: TextField(
+          controller: textController,
+          decoration: const InputDecoration(
+            labelText: "Card Number",
+            hintText: "... 1234",
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+            onPressed: () {
+              setState(() {
+                paymentMethods[index]['number'] = textController.text;
+              });
+              Navigator.pop(context);
+            },
+            child: const Text("Save", style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  //  ADD NEW CARD FUNCTION
+  void _addNewCard() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "Select Card Type",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              // Option 1: Visa
+              ListTile(
+                leading: const Text(
+                  "VISA",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+                title: const Text("Visa"),
+                onTap: () {
+                  Navigator.pop(context); // Close sheet
+                  _showAddDetailsDialog("visa", "VISA");
+                },
+              ),
+              // Option 2: Mastercard
+              ListTile(
+                leading: const Icon(Icons.credit_card, color: Colors.black54),
+                title: const Text("Mastercard"),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showAddDetailsDialog("mastercard", "Mastercard");
+                },
+              ),
+              // Option 3: Apple Pay
+              ListTile(
+                leading: const Icon(Icons.apple, color: Colors.black),
+                title: const Text("Apple Pay"),
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() {
+                    paymentMethods.add({
+                      "type": "apple_pay",
+                      "title": "Apple Pay",
+                      "number": "",
+                    });
+                  });
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // Helper to ask for numbers when adding Visa/Mastercard
+  void _showAddDetailsDialog(String type, String title) {
+    TextEditingController numberController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Add $title"),
+        content: TextField(
+          controller: numberController,
+          decoration: const InputDecoration(
+            labelText: "Card Number",
+            hintText: "... 0000",
+          ),
+          keyboardType: TextInputType.number,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+            onPressed: () {
+              setState(() {
+                paymentMethods.add({
+                  "type": type,
+                  "title": title,
+                  "number": numberController.text.isEmpty
+                      ? "... 0000"
+                      : numberController.text,
+                });
+              });
+              Navigator.pop(context);
+            },
+            child: const Text(
+              "Add Card",
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      // Clean White Header
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
+        // backgroundColor: Colors.black,
+        // elevation: 0,
+        automaticallyImplyLeading: true,
+        // title: const Text(
+        //   "ROORQ",
+        //   style: TextStyle(
+        //     color: Colors.white,
+        //     fontWeight: FontWeight.w900,
+        //     fontSize: 20,
+        //     letterSpacing: 1.0,
+        //   ),
+        // ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.close, color: Colors.white),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            //  PAGE TITLE
             const Text(
               "PAYMENT METHODS",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 25),
+            const SizedBox(height: 20),
 
-            //  LIST OF PAYMENT CARDS
+            // DYNAMIC LIST
             Expanded(
-              child: ListView(
-                children: [
-                  // --- VISA CARD ---
-                  _buildPaymentCard(
-                    context,
-                    logo: const Text(
-                      "VISA",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 18,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                    title: "", // Visa usually just shows the logo
-                    number: "",
-                    actionLabel: "EDIT",
-                    isRemove: false,
-                  ),
+              child: ListView.builder(
+                itemCount: paymentMethods.length,
+                itemBuilder: (context, index) {
+                  return _buildPaymentCard(index);
+                },
+              ),
+            ),
 
-                  // --- MASTERCARD 1 ---
-                  _buildPaymentCard(
-                    context,
-                    logo: const Icon(
-                      Icons.credit_card,
-                      size: 30,
-                      color: Colors.black87,
-                    ),
-                    title: "Mastercard",
-                    number: "",
-                    actionLabel: "EDIT",
-                    isRemove: false,
+            // ADD CARD BUTTON
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: _addNewCard,
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  side: const BorderSide(color: Colors.black),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
-
-                  // --- MASTERCARD 2 ---
-                  _buildPaymentCard(
-                    context,
-                    logo: const Icon(
-                      Icons.credit_card,
-                      size: 30,
-                      color: Colors.black54,
-                    ),
-                    title: "Mastercard",
-                    number: "",
-                    actionLabel: "REMOVE",
-                    isRemove: true, // This turns the text red
+                ),
+                child: const Text(
+                  "ADD NEW CARD",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
                   ),
-
-                  // --- APPLE PAY ---
-                  _buildPaymentCard(
-                    context,
-                    logo: const Icon(
-                      Icons.apple,
-                      size: 35,
-                      color: Colors.black,
-                    ),
-                    title: "Apple Pay",
-                    number: "",
-                    actionLabel: "",
-                    isRemove: false,
-                  ),
-                ],
+                ),
               ),
             ),
           ],
@@ -880,59 +1138,71 @@ class PaymentMethodsScreen extends StatelessWidget {
     );
   }
 
-  // Helper Widget to build the White Payment Cards
-  Widget _buildPaymentCard(
-    BuildContext context, {
-    required Widget logo,
-    required String title,
-    required String number,
-    required String actionLabel,
-    required bool isRemove,
-  }) {
+  // BUILD INDIVIDUAL CARD WIDGET
+  Widget _buildPaymentCard(int index) {
+    final data = paymentMethods[index];
+
+    Widget logoWidget;
+    if (data['type'] == 'visa') {
+      logoWidget = const Text(
+        "VISA",
+        style: TextStyle(
+          fontWeight: FontWeight.w900,
+          fontSize: 18,
+          fontStyle: FontStyle.italic,
+        ),
+      );
+    } else if (data['type'] == 'apple_pay') {
+      logoWidget = const Icon(Icons.apple, size: 28, color: Colors.black);
+    } else {
+      logoWidget = const Icon(
+        Icons.credit_card,
+        size: 28,
+        color: Colors.black54,
+      );
+    }
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 20),
+      margin: const EdgeInsets.only(bottom: 15),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        // Soft Shadow effect
+        borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 2,
+            spreadRadius: 1,
             blurRadius: 10,
-            offset: const Offset(0, 5),
+            offset: const Offset(0, 4),
           ),
         ],
         border: Border.all(color: Colors.grey.shade100),
       ),
       child: Row(
         children: [
-          //  The Logo (Visa text or Icon)
-          SizedBox(width: 50, child: logo),
-
+          // Logo
+          SizedBox(width: 50, child: logoWidget),
           const SizedBox(width: 15),
 
-          //  The Card Details (Title & Number)
+          // Details
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (title.isNotEmpty)
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
+                Text(
+                  data['title'],
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
-                if (number.isNotEmpty) ...[
-                  if (title.isNotEmpty) const SizedBox(height: 5),
+                ),
+                if (data['number'].toString().isNotEmpty) ...[
+                  const SizedBox(height: 5),
                   Text(
-                    number,
+                    data['number'],
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 14,
                       color: Colors.black54,
                     ),
                   ),
@@ -941,23 +1211,25 @@ class PaymentMethodsScreen extends StatelessWidget {
             ),
           ),
 
-          //  The Action Button (Edit/Remove)
-          if (actionLabel.isNotEmpty)
-            TextButton(
-              onPressed: () {
-                // Add logic here later
-              },
-              child: Text(
-                actionLabel,
-                style: TextStyle(
-                  color: isRemove
-                      ? const Color(0xFFE53935)
-                      : Colors.black87, // Red if remove, Black if edit
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                ),
+          // ACTION BUTTONS (Edit & Remove)
+          // We don't show edit/remove for Apple Pay usually, but if you want consistency:
+          if (data['type'] != 'apple_pay') ...[
+            InkWell(
+              onTap: () => _editMethod(index),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                child: Icon(Icons.edit, size: 20, color: Colors.black54),
               ),
             ),
+          ],
+
+          InkWell(
+            onTap: () => _removeMethod(index),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              child: Icon(Icons.delete_outline, size: 20, color: Colors.red),
+            ),
+          ),
         ],
       ),
     );
